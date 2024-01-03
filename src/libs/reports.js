@@ -1,11 +1,21 @@
 import PDFDocument from 'pdfkit-table'
 import ExcelJS from 'exceljs'
 
-// Funcion de creacion de raportes pdf y excel
-export function generateReport(data, fileName, titleFile, subtitleFile, res, isPdf){
+/**
+ * Funcion de creacion de reportes pdf y excel,
+ * recibe los siguientes parametros:
+ * @param {Object} data - Objeto con la información del reporte a generar
+ * @param {string} titleFile - Titulo del reporte
+ * @param {string} subtitleFile - Subtitulo del reporte
+ * @param {Object} res - Objeto response para poder enviar el reporte generado
+ * @param {string} report - Tipo de reporte a generar pdf | excel
+ */
+export function generateReport(data, titleFile, subtitleFile, res, report){
     try {
         // Extraer los encabezados del primer objeto del JSON
-        const keys = Object.keys(data[0].toObject());
+        // const keys = Object.keys(data[0].toObject());
+        let fileName = 'reporte'
+        const keys = Object.keys(data[0])
 
         const rowsData = []
         data.forEach(task => {
@@ -13,12 +23,12 @@ export function generateReport(data, fileName, titleFile, subtitleFile, res, isP
             rowsData.push(row);
         });
 
-        if (isPdf) {
+        if (report === 'pdf') {
             fileName = fileName + ".pdf"
 
             // Crear un buffer para almacenar el PDF en memoria
             let buffer = Buffer.from([]);
-            let doc = new PDFDocument({ bufferPages: true, margin: 30, size: 'A4' });
+            let doc = new PDFDocument({ bufferPages: true, margin: 30, size: 'A3' });
 
             // Pipe the PDF content into the buffer
             doc.on('data', chunk => {
@@ -42,15 +52,21 @@ export function generateReport(data, fileName, titleFile, subtitleFile, res, isP
             // });
 
             const table = {
-                title: titleFile,
-                subtitle: subtitleFile,
+                title: {label: titleFile, fontSize: 20, align: 'center', valign: "center"},
+                subtitle: {label: subtitleFile, fontSize: 10, color: '#EA411D', align: 'center'},
                 headers: keys,
                 rows: rowsData,
             };
 
-            doc.table(table, {
-                width: 500,
-            });
+            const options = {
+                width: 800,
+                padding: 5, // {Number} default: 0
+                columnSpacing: 5, // {Number} default: 5
+                hideHeader: false, 
+                minRowHeight: 0,
+              }
+
+            doc.table(table, options)
 
             // Finalizar y cerrar el documento
             doc.end();

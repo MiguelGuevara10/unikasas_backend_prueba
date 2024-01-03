@@ -1,58 +1,61 @@
 import mongoose from 'mongoose'
 
-// Esquema de cotizaciones en Mongo db
-const quoteShema = new mongoose.Schema({
+// Esquema de Proyectos en Mongo db
+const projectShema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
         trim: true
     },
-    email: {
+    responsible: {
         type: String,
         required: true,
         trim: true
     },
-    phone: {
+    estimated_cost: {
         type: Number,
-        required: true,
-        maxlength: 10, // Restringir a 10 por ser el numero de telefono 
+        required: true
+    },
+    final_cost: {
+        type: Number,
+        required: true
     },
     city: {
         type: String,
         required: true,
         trim: true
     },
-    location: {
+    address: {
         type: String,
         required: true,
         trim: true
     },
-    date: {
+    start_date: {
         type: Date,
         default: Date.now,
     }, 
-    comments: {
+    end_date: {
+        type: Date,
+        default: Date.now,
+    },
+    quote: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Quote',
+        required: true
+    },
+    description: {
         type: String,
         required: false,
         trim: true
-    },
-    product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true
     },
     state: {
         type: String,
-        enum: ['pendiente','respondida','cancelada','completada','finalizada'],
-        default: 'pendiente'
-    },
-    response: {
-        type: String,
         required: false,
-        trim: true
-    }
+        enum: ['En ejecución', 'Suspendido','Finalizado'],
+        default: 'En ejecución'
+    },
 }, {
     timestamps: true
 })
 
-export default mongoose.model('Quote', quoteShema)
+export default mongoose.model('Project', projectShema)

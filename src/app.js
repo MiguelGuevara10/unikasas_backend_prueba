@@ -6,7 +6,13 @@ import authRoutes from "./routes/auth.routes.js"
 import taskRoutes from "./routes/tasks.routes.js"
 import productRoutes from "./routes/produts.routes.js"
 import homeRoutes from "./routes/home.routes.js"
-import quoteRoutes from "./routes/quote.routes.js"
+import quoteRoutes from "./routes/quotes.routes.js"
+import userRoutes from "./routes/users.routes.js"
+import projectRoutes from "./routes/projects.routes.js"
+import projectStageRoutes from "./routes/stages.routes.js"
+import projectStageActivityRoutes from "./routes/activities.routes.js"
+import contactPeoplesRoutes from "./routes/contactspeoples.routes.js"
+import rolesRoutes from "./routes/roles.routes.js"
 
 const app = express()
 
@@ -31,5 +37,11 @@ app.use('/api', authRoutes) // Rutas protegidas
 app.use('/api', taskRoutes) // Rutas de tareas
 app.use('/api', productRoutes) // Rutas de productos
 app.use('/api', quoteRoutes) // Rutas de cotizaciones
+app.use('/api', userRoutes) // Rutas de usuarios
+app.use('/api', projectRoutes) // Rutas de proyectos
+app.use('/api', projectStageRoutes) // Rutas de etapas de proyecto
+app.use('/api', projectStageActivityRoutes) // Rutas de actividades de etapas de proyecto
+app.use('/api', contactPeoplesRoutes) // Rutas de contactos de personas
+app.use('/api', rolesRoutes) // Rutas de roles de usuarios
 
 export default app

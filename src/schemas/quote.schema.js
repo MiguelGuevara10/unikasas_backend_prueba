@@ -32,4 +32,7 @@ export const createQuoteSchema = z.object({
     }).max(255, {
         message: 'El comentario no debe sobrepasar los 255 caracteres',
     }).optional(),
+    response: z.string({
+        required_error: 'La respuesta no es un texto'
+    }).optional(),
 })

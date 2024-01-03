@@ -3,22 +3,21 @@ import { generateReport } from "../libs/reports.js"
 
 // Traer todas las tareas del usuario logueado 
 export const getTasks = async (req, res) => {
-    // const tasks = await Task.find()
     let tasks = []
     try {
-        if (req && req.query.query) { // Filtrat tareas mediante parametro de busqueda
-            console.log(req.query)
+        if (req && req.query.query) { // Filtrar tareas mediante parametro de busqueda
             tasks = await Task.find({
                 "$or" : [ 
                     {"title": {$regex:req.query.query, $options:"i"}},
                     {"description": {$regex:req.query.query, $options:"i"}},
                 ]
-            })
-
+            }).populate('user')
+            .sort({ createdAt: -1 }) // Ordenar desendetemente por fecha de creación
         } else {
             tasks = await Task.find({
                 user: req.user.id
             }).populate('user')
+            .sort({ createdAt: -1 }) // Ordenar desendetemente por fecha de creación
         }
         res.json(tasks)
     } catch (error) {
@@ -79,28 +78,42 @@ export const deleteTask = async (req, res) => {
 }
 
 // Generar reporte de tareas
-export const getReport = async (req, res) => {
+export const getReportTasks = async (req, res) => {
     try {
-        const { isPdf } = req.body
-        
-        const tasks = await Task.find({
-            user: req.user.id
-        })
-        // .select({
-        //     titulo: '$title',
-        //     descripcion: '$description',
-        //     fecha_creacion: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
-        //     // usuario: '$user.username'
-        // });
+        const { start_date, end_date, report } = req.body
 
-        const fileName = "reporte"
-        const title = "Reporte de tareas"
-        const subtitle = "Este es el reporte de tareas del usuario"
+        const tasks = await Task.find({ 
+            user: req.user.id,
+            createdAt: {
+                $gte: start_date, // Mayor o igual que 
+                $lte: end_date    // Menor o igual que 
+            }
+        }).populate('user')
+
+        // retornar un archivo vacio
+        if (tasks.length === 0) {
+            res.setHeader('Content-Type', 'application');
+            return res.send()
+        }
+
+        // Convertir campos
+        const tasksModified = tasks.map(task => {
+            const modifiedTask = task.toObject(); // Convierte el documento Mongoose a un objeto JS
         
-        await generateReport(tasks, fileName, title, subtitle, res, isPdf)
+            // Convierte los campos al formato deseado
+            modifiedTask.date = task.date.toISOString()
+            modifiedTask.createdAt = task.createdAt.toISOString()
+            modifiedTask.updatedAt = task.updatedAt.toISOString()
+            modifiedTask.user = task.user.username
+            delete modifiedTask.__v
+        
+            return modifiedTask;
+        })
+        
+        await generateReport(tasksModified, 
+            "Reporte de tareas Unikasas", "Este es el reporte de tareas del usuario", res, report)
         
     } catch (error) {
-        console.error(error)
         return res.status(500).json({message: "Error al generar reporte"})   
     }
 }

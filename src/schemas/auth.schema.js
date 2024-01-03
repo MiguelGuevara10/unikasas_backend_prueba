@@ -22,7 +22,7 @@ export const registerSchema = z.object({
     }),
 })
 
-// Verificacion delogin de usuarios 
+// Verificacion de login de usuarios 
 export const loginSchema = z.object({
     email: z.string({
         required_error: 'El email es requerido'
@@ -34,4 +34,21 @@ export const loginSchema = z.object({
     }).min(6, {
         message: 'El password debe tener almenos 6 caracteres'
     }),
+})
+
+// Verificacion de recuperacion de cuenta de usuarios 
+export const recoverAccountSchema = z.object({
+    email: z.string({
+        required_error: 'El email es requerido'
+    }).email({
+        message: 'El email no es valido'
+    }),
+    pin: z.string().min(6, {
+            message: 'El pin debe tener 6 caracteres'
+    }).max(6, {
+            message: 'El pin debe tener 6 caracteres'
+    }).optional(),
+    password: z.string().min(6, {
+        message: 'El password debe tener almenos 6 caracteres'
+    }).optional(),
 })

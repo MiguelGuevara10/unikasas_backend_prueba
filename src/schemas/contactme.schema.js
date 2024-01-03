@@ -15,6 +15,7 @@ export const createContactmeSchema = z.object({
     }).email({
         message: 'El email no es valido'
     }),
+    phone: z.number().optional(),
     message: z.string({
         required_error: 'El mensaje no es un texto'
     }).min(10, {
@@ -22,4 +23,7 @@ export const createContactmeSchema = z.object({
     }).max(255, {
         message: 'El mensaje no debe sobrepasar los 255 caracteres',
     }),
+    consent: z.boolean({
+        required_error: 'El consentimiento es requerido'
+    })
 })

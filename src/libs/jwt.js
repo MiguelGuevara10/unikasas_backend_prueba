@@ -1,7 +1,12 @@
 import jwt from 'jsonwebtoken'
 import { TOKEN_SECERT } from "../config.js"
 
-// Funcion de creacion de token de acceso para usuarios
+/**
+ * Funcion de creacion de token de acceso para usuarios,
+ * recibe los siguientes parametros:
+ * @param {Object} payload - Id del usuario para la generacion del token
+ * @retunr Token de usuario generado
+ */
 export function createAccesToken(payload){
     try {
         return new Promise((resolve, reject) => {

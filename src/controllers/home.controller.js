@@ -4,12 +4,14 @@ import { sendEmail } from "../libs/email.js"
 // Crear un registro de contacto de usario
 export const createConctame = async (req, res) => {
     try {
-        const { name, email, message } = req.body
+        const { name, email, phone, message, consent } = req.body
 
         const newContactme = Contactme({
             name,
             email,
+            phone,
             message,
+            consent
         })
         
         const saveContactme = await newContactme.save()
@@ -17,13 +19,11 @@ export const createConctame = async (req, res) => {
 
         // Enviar email 
         try {
-            await sendEmail(newContactme, "Mensaje de contacto")
+            await sendEmail(newContactme, "mensaje_contacto")
         } catch (error) {
-           console.error(error) 
+            return res.status(500).json({message: "Error al enviar email contacto"})
         }
     } catch (error) {
         return res.status(500).json({message: "Error al registar el mensaje de contacto"})
     }
 }
-
-// TODO Crear cotizacion 
